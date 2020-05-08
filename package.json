@@ -1,5 +1,5 @@
 {
-  "name": "phelia",
+  "name": "@kintaba/phelia",
   "version": "0.1.4",
   "main": "dist/index.js",
   "license": "MIT",
