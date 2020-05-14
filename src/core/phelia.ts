@@ -1,6 +1,7 @@
 import { createMessageAdapter } from "@slack/interactive-messages";
 import { MessageAdapterOptions } from "@slack/interactive-messages/dist/adapter";
 import { WebClient, WebClientOptions } from "@slack/web-api";
+import fetch from "node-fetch";
 import React, { useState as reactUseState } from "react";
 
 import { render, getOnSearchOptions } from "./reconciler";
@@ -33,12 +34,24 @@ export class Phelia {
 
   private homeComponent: PheliaHome = undefined;
 
+  private responseURL: string | undefined = undefined;
+
   setStorage(storage: PheliaStorage) {
     Phelia.Storage = storage;
   }
 
   constructor(token: string, slackOptions?: WebClientOptions) {
     this.client = new WebClient(token, slackOptions);
+  }
+
+  async withResponseURL<T>(
+    url: string,
+    callback: () => Promise<T>,
+  ): Promise<T> {
+    this.responseURL = url;
+    const result = await callback();
+    this.responseURL = null;
+    return result;
   }
 
   async postMessage<p>(
@@ -121,16 +134,30 @@ export class Phelia {
       React.createElement(message, { useState, props, useModal })
     );
 
-    // only can return a user id here, need to enhance it using methods.user
-    const {
-      channel: channelID,
-      ts,
-      message: sentMessageData,
-    } = await this.client.chat.postEphemeral({
-      ...messageData,
-      user,
-      channel,
-    });
+    let channelID: string;
+    let ts: string;
+    if (this.responseURL) {
+      const rawResult = await fetch(this.responseURL, {
+        method: "POST",
+        body: JSON.stringify({
+          ...messageData,
+          user,
+          channel,
+        }),
+      });
+
+      const result = await rawResult.json();
+      channelID = result.channel as string;
+      ts = result.ts as string;
+    } else {
+      const result = await this.client.chat.postEphemeral({
+        ...messageData,
+        user,
+        channel,
+      });
+      channelID = result.channel as string;
+      ts = result.ts as string;
+    }
 
     const messageKey = `${channelID}:${ts}`;
 
@@ -142,7 +169,7 @@ export class Phelia {
         isEphemeral: true,
         name: message.name,
         state: initializedState,
-        user: { id: (sentMessageData as any).user },
+        user: { id: user },
         props,
         channelID,
         ts,
