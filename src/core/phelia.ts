@@ -1,6 +1,6 @@
 import { createMessageAdapter } from "@slack/interactive-messages";
 import { MessageAdapterOptions } from "@slack/interactive-messages/dist/adapter";
-import { WebClient, WebClientOptions, ChatPostMessageArguments } from "@slack/web-api";
+import { WebClient, WebClientOptions, ChatPostMessageArguments, WebAPICallResult, ChatPostEphemeralArguments } from "@slack/web-api";
 import React, { useState as reactUseState } from "react";
 
 import { render, getOnSearchOptions } from "./reconciler";
@@ -69,12 +69,13 @@ export class Phelia {
     );
 
     /** Relays the message to slack, using the `responseURL` if provided */
-    async function postMessageImpl(messageArgs: ChatPostMessageArguments) {
+    const postMessageImpl = async (messageArgs: ChatPostMessageArguments) => {
       if (responseURL) {
-        return fetch(responseURL, {
+        const response = await fetch(responseURL, {
           method: "POST",
           body: JSON.stringify(messageArgs),
         });
+        return response.json() as Promise<WebAPICallResult>;
       }
 
       return this.client.chat.postMessage(messageArgs);
@@ -137,15 +138,16 @@ export class Phelia {
     );
 
     /** Relays the ephemeral message to slack, using the `responseURL` if provided */
-    async function postEphemeralImpl(messageArgs: ChatPostMessageArguments) {
+    const postEphemeralImpl = async (messageArgs: ChatPostEphemeralArguments) => {
       if (responseURL) {
-        return fetch(responseURL, {
+        const response = await fetch(responseURL, {
           method: "POST",
           body: JSON.stringify({
             ...messageArgs,
             response_type: "ephemeral",
           }),
         });
+        return response.json() as Promise<WebAPICallResult>;
       }
 
       return this.client.chat.postEphemeral(messageArgs);
