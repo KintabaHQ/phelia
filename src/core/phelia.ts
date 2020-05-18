@@ -1,6 +1,6 @@
 import { createMessageAdapter } from "@slack/interactive-messages";
 import { MessageAdapterOptions } from "@slack/interactive-messages/dist/adapter";
-import { WebClient, WebClientOptions } from "@slack/web-api";
+import { WebClient, WebClientOptions, ChatPostMessageArguments } from "@slack/web-api";
 import React, { useState as reactUseState } from "react";
 
 import { render, getOnSearchOptions } from "./reconciler";
@@ -22,6 +22,7 @@ import {
   PheliaHome,
   SlackUser,
 } from "./interfaces";
+import fetch from "node-fetch";
 
 /** The main phelia client. Handles sending messages with phelia components */
 export class Phelia {
@@ -44,7 +45,8 @@ export class Phelia {
   async postMessage<p>(
     message: PheliaMessage<p>,
     channel: string,
-    props: p = null
+    props: p = null,
+    responseURL: string = null,
   ): Promise<string> {
     const initializedState: { [key: string]: any } = {};
 
@@ -66,12 +68,24 @@ export class Phelia {
       React.createElement(message, { useState, props, useModal })
     );
 
+    /** Relays the message to slack, using the `responseURL` if provided */
+    async function postMessageImpl(messageArgs: ChatPostMessageArguments) {
+      if (responseURL) {
+        return fetch(responseURL, {
+          method: "POST",
+          body: JSON.stringify(messageArgs),
+        });
+      }
+
+      return this.client.chat.postMessage(messageArgs);
+    }
+
     // only can return a user id here, need to enhance it using methods.user
     const {
       channel: channelID,
       ts,
       message: sentMessageData,
-    } = await this.client.chat.postMessage({
+    } = await postMessageImpl({
       ...messageData,
       channel,
     });
@@ -100,6 +114,7 @@ export class Phelia {
     channel: string,
     user: string,
     props: p = null,
+    responseURL: string = null,
   ): Promise<string> {
     const initializedState: { [key: string]: any } = {};
 
@@ -121,12 +136,26 @@ export class Phelia {
       React.createElement(message, { useState, props, useModal })
     );
 
+    /** Relays the ephemeral message to slack, using the `responseURL` if provided */
+    async function postEphemeralImpl(messageArgs: ChatPostMessageArguments) {
+      if (responseURL) {
+        return fetch(responseURL, {
+          method: "POST",
+          body: JSON.stringify({
+            ...messageArgs,
+            response_type: "ephemeral",
+          }),
+        });
+      }
+
+      return this.client.chat.postEphemeral(messageArgs);
+    }
+
     // only can return a user id here, need to enhance it using methods.user
     const {
       channel: channelID,
       ts,
-      message: sentMessageData,
-    } = await this.client.chat.postEphemeral({
+    } = await postEphemeralImpl({
       ...messageData,
       user,
       channel,
@@ -142,7 +171,7 @@ export class Phelia {
         isEphemeral: true,
         name: message.name,
         state: initializedState,
-        user: { id: (sentMessageData as any).user },
+        user: { id: user },
         props,
         channelID,
         ts,
