@@ -733,7 +733,7 @@ export class Phelia {
           .map((key) => [key, Object.keys(payload.view.state.values[key])[0]])
           .map(([key, action]) => {
             const data = payload.view.state.values[key][action];
-            
+
             if (data.type === "datepicker") {
               return [action, data.selected_date];
             }
@@ -743,9 +743,9 @@ export class Phelia {
               data.type === "multi_static_select" ||
               data.type === "multi_external_select"
             ) {
-              const selected = data.selected_options.map(
+              const selected = data.selected_options?.map(
                 (option: any) => option.value
-              );
+              ) ?? [];
 
               return [action, selected];
             }
