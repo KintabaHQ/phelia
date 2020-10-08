@@ -12,7 +12,6 @@ import {
   PlainTextInput,
   SectionBlock,
 } from "@slack/web-api";
-import { XOR } from "ts-xor";
 import {
   InteractionEvent,
   MultiSelectOptionEvent,
@@ -20,6 +19,7 @@ import {
   SelectDateEvent,
   SelectOptionEvent,
   SubmitEvent,
+  XOR,
 } from "./interfaces";
 import { packActionID, unpackActionID } from "./utils";
 
@@ -356,10 +356,8 @@ export const Confirm = (props: ConfirmProps) => (
     componentType="confirm"
     toSlackElement={(props, reconcile, promises) => {
       const instance: any = {
-        // using a function so the appendInitialChild can determine the type of the component
-        // whereas slack forbids a confirm object to have a 'type' property
+        /** Allows appendInitialChild to determine type of the component */
         isConfirm: () => true,
-
         style: props.style,
       };
 
@@ -421,7 +419,9 @@ export const Option = (props: OptionProps) => (
     componentType="option"
     toSlackElement={(props, reconcile, promises): Promise<SlackOption> => {
       const instance: any = {
+        /** Whether the option is selected or not */
         isSelected: () => props.selected,
+        /** Used to determine the type of this instance down the line */
         isOption: () => true,
         value: props.value,
         url: props.url,
@@ -943,6 +943,7 @@ export const OptionGroup = (props: OptionGroupProps) => (
     componentType="option-group"
     toSlackElement={(props, reconcile, promises) => {
       const instance: any = {
+        /** Used to determine whether this is an option group down the line */
         isOptionGroup: () => true,
         options: [],
       };
