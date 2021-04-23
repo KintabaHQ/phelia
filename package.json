@@ -1,9 +1,9 @@
 {
   "name": "@kintaba/phelia",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "main": "dist/index.js",
   "license": "MIT",
-  "repository": "https://github.com/maxchehab/phelia",
+  "repository": "https://github.com/kintabahq/phelia",
   "devDependencies": {
     "@types/jest": "^26.0.14",
     "@types/node": "14.11.5",
