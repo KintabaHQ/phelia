@@ -1355,7 +1355,7 @@ export const MultiSelectMenu = (props: MultiSelectMenuProps) => (
       }
 
       if (props.type === "external") {
-        instance.initial_options = [].concat(externalOptions);
+        instance.initial_options = externalOptions ? [].concat(externalOptions) : undefined;
         instance.min_query_length = props.minQueryLength;
       }
 
