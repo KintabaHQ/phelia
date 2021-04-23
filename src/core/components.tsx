@@ -1319,6 +1319,7 @@ export const MultiSelectMenu = (props: MultiSelectMenuProps) => (
 
       const [confirm, confirmPromises] = reconcile(props.confirm);
       const [placeholder, placeholderPromises] = reconcile(props.placeholder);
+      const [externalOptions, externalOptionsPromises] = reconcile(props.initialOptions);
       const [{ fields: optionsOrGroups }, optionPromises] = reconcile(
         React.createElement(Section, { children: props.children })
       );
@@ -1354,7 +1355,7 @@ export const MultiSelectMenu = (props: MultiSelectMenuProps) => (
       }
 
       if (props.type === "external") {
-        instance.initial_options = initialOptions;
+        instance.initial_options = [].concat(externalOptions);
         instance.min_query_length = props.minQueryLength;
       }
 
@@ -1389,7 +1390,8 @@ export const MultiSelectMenu = (props: MultiSelectMenuProps) => (
         ...confirmPromises,
         ...placeholderPromises,
         ...optionPromises,
-        ...initialOptionsPromises
+        ...initialOptionsPromises,
+        ...externalOptionsPromises
       );
 
       return instance;
