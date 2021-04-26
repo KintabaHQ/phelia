@@ -1319,7 +1319,9 @@ export const MultiSelectMenu = (props: MultiSelectMenuProps) => (
 
       const [confirm, confirmPromises] = reconcile(props.confirm);
       const [placeholder, placeholderPromises] = reconcile(props.placeholder);
-      const [externalOptions, externalOptionsPromises] = reconcile(props.initialOptions);
+      const [externalOptions, externalOptionsPromises] = reconcile(
+        React.createElement(Section, { children: props.initialOptions })
+      );
       const [{ fields: optionsOrGroups }, optionPromises] = reconcile(
         React.createElement(Section, { children: props.children })
       );
