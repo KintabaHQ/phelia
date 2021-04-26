@@ -1518,6 +1518,37 @@ describe("Multi Static Select Menu", () => {
 });
 
 describe("Multi External Select Menu", () => {
+  describe("Multi External Select Menu with initial options", () => {
+      const onSearchOptions = jest.fn();
+      const component = () => (
+        <MultiSelectMenu
+          type="external"
+          minQueryLength={100}
+          initialOptions={
+            [
+                <Option key="option1" selected value="foo-1">Foo 1</Option>,
+                <Option key="option2" selected value="foo-2">Foo 2</Option>
+            ]
+          }
+          onSearchOptions={(event) => {
+            onSearchOptions(event);
+            return [
+              <OptionGroup key="1" label={"A group"}>
+                <Option value="option-1">This was loaded asynchronously</Option>
+              </OptionGroup>,
+            ];
+          }}
+          action="select"
+          placeholder="a placeholder"
+        />
+    );
+
+    it("renders a Multi External Select Menu with initial options", async () => {
+      const blocks = await render(React.createElement(component));
+      expect(blocks).toMatchSnapshot();
+    });
+  });
+
   describe("Default Multi External Select Menu", () => {
     const onSearchOptions = jest.fn();
     const component = () => (

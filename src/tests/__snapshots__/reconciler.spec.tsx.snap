@@ -941,6 +941,45 @@ Object {
 }
 `;
 
+exports[`Multi External Select Menu Multi External Select Menu with initial options renders a Multi External Select Menu with initial options 1`] = `
+Object {
+  "action_id": "select",
+  "confirm": undefined,
+  "initial_options": Array [
+    Object {
+      "description": undefined,
+      "isOption": [Function],
+      "isSelected": [Function],
+      "text": Object {
+        "text": "Foo 1",
+        "type": "plain_text",
+      },
+      "url": undefined,
+      "value": "foo-1",
+    },
+    Object {
+      "description": undefined,
+      "isOption": [Function],
+      "isSelected": [Function],
+      "text": Object {
+        "text": "Foo 2",
+        "type": "plain_text",
+      },
+      "url": undefined,
+      "value": "foo-2",
+    },
+  ],
+  "max_selected_items": undefined,
+  "min_query_length": 100,
+  "onSearchOptions": [Function],
+  "placeholder": Object {
+    "text": "a placeholder",
+    "type": "plain_text",
+  },
+  "type": "multi_external_select",
+}
+`;
+
 exports[`Multi Static Select Menu Multi Static Select Menu with diverse option group renders a Multi Static Select Menu with diverse option group 1`] = `
 Object {
   "action_id": "select",
