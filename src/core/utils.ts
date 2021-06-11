@@ -104,12 +104,12 @@ export function parseMessageKey(payload: any) {
     return payload.view.id;
   }
 
-  const {actions} = payload;
+  const { actions } = payload;
   const unwrappedAction = (Array.isArray(actions) ? actions : [])
     .map((v) => {
-        return v.action_id ? unpackActionID(v.action_id) : null
+      return v.action_id ? unpackActionID(v.action_id) : null;
     })
-    .find((v) => v.prefix !== null);
+    .find((v) => v.prefix != null);
 
   if (unwrappedAction) {
     return unwrappedAction.prefix;
