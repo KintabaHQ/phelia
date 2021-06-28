@@ -121,12 +121,13 @@ export const Button = (props: ButtonProps) => (
     action={props.action ? unpackActionID(props.action).actionID : undefined}
     componentType={"button"}
     toSlackElement={(props, reconcile, promises, action): SlackButton => {
-      const actionIDPrefix = action?.type !== "onresponse"
-        ? undefined
-        : action.value as string;
+      const actionIDPrefix =
+        action?.type !== "onresponse" ? undefined : (action.value as string);
       const instance: SlackButton = {
         type: "button",
-        action_id: props.action ? packActionID(props.action, actionIDPrefix) : undefined,
+        action_id: props.action
+          ? packActionID(props.action, actionIDPrefix)
+          : undefined,
         style: props.style,
         url: props.url,
         text: { type: "plain_text", text: "", emoji: props.emoji },
@@ -479,13 +480,14 @@ export const DatePicker = (props: DatePickerProps) => (
     {...props}
     componentType="confirm"
     toSlackElement={(props, reconcile, promises, action): Datepicker => {
-      const actionIDPrefix = action?.type !== "onresponse"
-        ? undefined
-        : action.value as string;
+      const actionIDPrefix =
+        action?.type !== "onresponse" ? undefined : (action.value as string);
       const instance: Datepicker = {
         type: "datepicker",
         initial_date: props.initialDate,
-        action_id: props.action ? packActionID(props.action, actionIDPrefix) : undefined,
+        action_id: props.action
+          ? packActionID(props.action, actionIDPrefix)
+          : undefined,
       };
 
       const [placeholder, placeholderPromises] = reconcile(props.placeholder);
@@ -522,14 +524,11 @@ interface MessageProps {
  */
 export const Message = (props: MessageProps) => (
   <component
-    {...((props) => {
-      const { username, iconURL, ...theRest } = props;
-      return theRest;
-    })(props)}
+    {...props}
     componentType="message"
-    toSlackElement={({ text }) => ({
-      username: props.username,
-      icon_url: props.iconURL,
+    toSlackElement={({ text, username, iconURL }) => ({
+      username: username,
+      icon_url: iconURL,
       blocks: [],
       text,
     })}
@@ -555,11 +554,11 @@ interface BaseModalProps {
 
   /**
    * An optional callback that executes when the modal is submitted.
-   */ 
+   */
   onSubmit?: (event: SubmitEvent) => Promise<void>;
   /**
    * An optional callback that executes when the modal is canceled.
-   */ 
+   */
   onCancel?: (event: InteractionEvent) => Promise<void>;
 }
 
@@ -574,7 +573,7 @@ type RootModalProps = BaseModalProps & {
    * An optional callback that executes when the modal is canceled.
    */
   onCancel?: (event: InteractionEvent) => Promise<void>;
-}
+};
 
 type InlineModalProps = BaseModalProps & {
   /** A modal subtype indicating this modal was opened by another component. */
@@ -1103,13 +1102,14 @@ export const SelectMenu = (props: SelectMenuProps) => (
     {...props}
     componentType="select-menu"
     toSlackElement={(props, reconcile, promises, action) => {
-      const actionIDPrefix = action?.type !== "onresponse"
-        ? undefined
-        : action.value as string;
+      const actionIDPrefix =
+        action?.type !== "onresponse" ? undefined : (action.value as string);
 
       const instance: any = {
         type: props.type + "_select",
-        action_id: props.action ? packActionID(props.action, actionIDPrefix) : undefined,
+        action_id: props.action
+          ? packActionID(props.action, actionIDPrefix)
+          : undefined,
         onSearchOptions: props.onSearchOptions,
       };
 
@@ -1318,13 +1318,14 @@ export const MultiSelectMenu = (props: MultiSelectMenuProps) => (
     {...props}
     componentType="multi-select-menu"
     toSlackElement={(props, reconcile, promises, action) => {
-      const actionIDPrefix = action?.type !== "onresponse"
-        ? undefined
-        : action.value as string;
+      const actionIDPrefix =
+        action?.type !== "onresponse" ? undefined : (action.value as string);
 
       const instance: any = {
         type: "multi_" + props.type + "_select",
-        action_id: props.action ? packActionID(props.action, actionIDPrefix) : undefined,
+        action_id: props.action
+          ? packActionID(props.action, actionIDPrefix)
+          : undefined,
         max_selected_items: props.maxSelectedItems,
         onSearchOptions: props.onSearchOptions,
       };
@@ -1369,7 +1370,10 @@ export const MultiSelectMenu = (props: MultiSelectMenuProps) => (
       }
 
       if (props.type === "external") {
-        instance.initial_options = Array.isArray(externalOptions) && externalOptions.length ? [].concat(externalOptions) : undefined;
+        instance.initial_options =
+          Array.isArray(externalOptions) && externalOptions.length
+            ? [].concat(externalOptions)
+            : undefined;
         instance.min_query_length = props.minQueryLength;
       }
 
