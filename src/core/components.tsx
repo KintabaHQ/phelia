@@ -510,6 +510,10 @@ interface MessageProps {
   children: PheliaChildren;
   /** The head/title text message. */
   text?: string;
+  /** User from which this message was sent */
+  username?: string;
+  /** URL of icon of user sending this message */
+  iconURL?: string;
 }
 
 /**
@@ -518,9 +522,17 @@ interface MessageProps {
  */
 export const Message = (props: MessageProps) => (
   <component
-    {...props}
+    {...((props) => {
+      const { username, iconURL, ...theRest } = props;
+      return theRest;
+    })(props)}
     componentType="message"
-    toSlackElement={({ text }) => ({ blocks: [], text })}
+    toSlackElement={({ text }) => ({
+      username: props.username,
+      icon_url: props.iconURL,
+      blocks: [],
+      text,
+    })}
   />
 );
 
